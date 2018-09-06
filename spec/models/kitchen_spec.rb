@@ -14,4 +14,23 @@ RSpec.describe Kitchen, type: :model do
       end
     end
   end
+
+  describe HustleModel::ValidatableOnDestroy do
+    describe 'before_destroy callback' do
+      let!(:kitchen) { Kitchen.create!(name: 'foo', address: 'bar') }
+
+      context 'data is valid' do
+        it 'destroys and returns destroyed object' do
+          expect { expect(kitchen.destroy).to be_truthy }.to change(Kitchen, :count).by(-1)
+        end
+      end
+
+      context 'data is not valid' do
+        it 'not destroys and returns false' do
+          kitchen.update!(name: nil)
+          expect { expect(kitchen.destroy).to be false }.not_to change(Kitchen, :count)
+        end
+      end
+    end
+  end
 end
